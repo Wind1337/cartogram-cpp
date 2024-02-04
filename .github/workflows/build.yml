@@ -1,0 +1,29 @@
+name: Build and Upload Artifact
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential manpages-dev software-properties-common libcgal-dev libomp-dev libcairo2-dev nlohmann-json3-dev fftw3-dev
+        sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+        sudo apt update && sudo apt install -y gcc-11 g++-11
+
+    - name: Build Project
+      run: |
+        CORES=$(nproc)
+        sudo cmake -B build
+        sudo make -j${CORES} -C build
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cartogram
+        path: ./build/bin/cartogram
