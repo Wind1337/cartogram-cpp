@@ -21,6 +21,13 @@ jobs:
         CORES=$(nproc)
         sudo cmake -B build
         sudo make -j${CORES} -C build
+        
+    - name: Run Tests
+      run: |
+        sudo make install -C build
+        cd tests/
+        chmod +x stress_test.sh
+        bash stress_test.sh
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
