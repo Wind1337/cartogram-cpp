@@ -12,6 +12,16 @@ jobs:
     - name: Install Dependencies with Homebrew
       run: |
         brew install llvm@13 libomp pkg-config boost fftw cgal nlohmann-json cmake cairo
+        
+    - name: Configure Environment
+      run: |
+        echo "LLVM_DIR=$(brew --prefix llvm@13)/lib/cmake/llvm" >> $GITHUB_ENV
+        echo "OpenMP_CXX_FLAGS=-Xpreprocessor -fopenmp -I$(brew --prefix libomp)/include" >> $GITHUB_ENV
+        echo "OpenMP_CXX_LIB_NAMES=omp" >> $GITHUB_ENV
+        echo "OpenMP_omp_LIBRARY=$(brew --prefix libomp)/lib/libomp.dylib" >> $GITHUB_ENV
+        echo "LDFLAGS=-L$(brew --prefix llvm@13)/lib -Wl,-rpath,$(brew --prefix llvm@13)/lib" >> $GITHUB_ENV
+        echo "CPPFLAGS=-I$(brew --prefix llvm@13)/include" >> $GITHUB_ENV
+        echo 'PATH=$(brew --prefix llvm@13)/bin:$PATH' >> $GITHUB_ENV
 
     - name: Build Project
       run: |
