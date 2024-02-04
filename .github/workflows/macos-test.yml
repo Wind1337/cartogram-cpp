@@ -1,0 +1,34 @@
+name: Build and Upload Artifact (macOS)
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies with Homebrew
+      run: |
+        brew install llvm@13 libomp pkg-config boost fftw cgal nlohmann-json cmake cairo
+
+    - name: Build Project
+      run: |
+        export PATH="/usr/local/opt/llvm@13/bin:$PATH"
+        CORES=$(sysctl -n hw.ncpu)
+        cmake -B build
+        make -j${CORES} -C build
+    
+    - name: Run Tests
+      run: |
+        make install -C build
+        cd tests/
+        chmod +x stress_test.sh
+        bash stress_test.sh
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: cartogram
+        path: ./build/bin/cartogram
