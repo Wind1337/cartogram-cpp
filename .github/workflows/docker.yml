@@ -2,7 +2,7 @@ name: Build and Upload Docker Image
 
 on:
   workflow_run:
-    workflows: ["Build and Upload Artifact"]
+    workflows: [Build and Upload Artifact]
     types:
       - completed
 
